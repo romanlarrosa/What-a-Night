@@ -12,19 +12,21 @@ class Prota {
         containerGeometry,
         //new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.0 })
         // Uncomment the next line to see the wireframe of the container shape
-        new THREE.MeshBasicMaterial({ wireframe: true, opacity: 0.5 }), 0
+        new THREE.MeshBasicMaterial({ wireframe: true, opacity: 0.5 }), 24
     );
 
+    /*
     this.constraint = new Physijs.SliderConstraint (
       this.box_container, scene.ground, this.box_container.position, new THREE.Vector3 (Math.PI/2,0,0));
     // DESPUES, se añade la restriccion a la escena
     scene.addConstraint (this.constraint);
     // FINALMENTE, se configura
     //constraint.setLimits (-10,10,0,0);
-    
+    */
 
     this.box_container.add(this.meshProta);
-    this.box_container.position.set(0,4,0);
+    this.box_container.position.set(0,4.5,0);
+    this.box_container.__dirtyPosition = true;
     // Assuming your model has already been imported
     
     scene.add(this.box_container);
@@ -33,8 +35,7 @@ class Prota {
     this.right = false;
     this.left = false;
 
-
-      
+    this.animando=false;
     }
 
     createProta() {
@@ -45,76 +46,160 @@ class Prota {
       var cuerpo = new THREE.BoxGeometry(2,4,0.8);
       cuerpo.translate(0,4.5,0);
       var piernaI = new THREE.BoxGeometry(0.4,3,0.4);
-      piernaI.translate(-0.6,1.5,0);
+      piernaI.translate(0,-1.5,0);
       var piernaD = new THREE.BoxGeometry(0.4,3,0.4);
-      piernaD.translate(0.6,1.5,0);
+      piernaD.translate(0,-1.5,0);
       var brazoI = new THREE.BoxGeometry(0.4,3,0.4);
-      brazoI.translate(-1.5,1.5,0);
+      brazoI.translate(0, -1.5, 0);
       brazoI.rotateZ(-0.2);
-      brazoI.translate(0, 3,0);
-
       var brazoD = new THREE.BoxGeometry(0.4,3,0.4);
-      brazoD.translate(1.5,1.5,0);
+      brazoD.translate(0, -1.5, 0);
       brazoD.rotateZ(0.2);
-      brazoD.translate(0, 3,0);
-      //brazoD.translate(0.6,1.5 + 4,0);
 
-      this.meshProta.add(new THREE.Mesh(cabeza, material));
-      this.meshProta.add(new THREE.Mesh(cuerpo, material));
-      this.meshProta.add(new THREE.Mesh(piernaD, material));
-      this.meshProta.add(new THREE.Mesh(piernaI, material));
-      this.meshProta.add(new THREE.Mesh(brazoD, material));
-      this.meshProta.add(new THREE.Mesh(brazoI, material));
+      this.brazoD_ = new THREE.Mesh(brazoD, material);
+      this.brazoI_ = new THREE.Mesh(brazoI, material);
+
+      this.brazoDM = new THREE.Object3D();
+      this.brazoDM.add(this.brazoD_);
+      this.brazoDM.position.set(1, 6.5, 0);
+
+      this.brazoIM = new THREE.Object3D();
+      this.brazoIM.add(this.brazoI_);
+      this.brazoIM.position.set(-1, 6.5, 0);
+
+      this.piernaD_ = new THREE.Mesh(piernaD, material);
+      this.piernaI_ = new THREE.Mesh(piernaI, material);
+
+      this.piernaDM = new THREE.Object3D();
+      this.piernaDM.add(this.piernaD_);
+      this.piernaDM.position.set(0.6, 3, 0);
+
+      this.piernaIM = new THREE.Object3D();
+      this.piernaIM.add(this.piernaI_);
+      this.piernaIM.position.set(-0.6, 3, 0);
+
+
+      //Crear los mesh
+      this.cabezaM = new THREE.Mesh(cabeza, material);
+      this.cuerpoM = new THREE.Mesh(cuerpo, material);
+      
+
+      this.meshProta.add(this.cabezaM);
+      this.meshProta.add(this.cuerpoM);
+      this.meshProta.add(this.piernaDM);
+      this.meshProta.add(this.piernaIM);
+      this.meshProta.add(this.brazoDM);
+      this.meshProta.add(this.brazoIM);
 
       this.meshProta.position.set(0,-3.9,0);
     }
     
-    createGUI(gui) {
+    animar(){
+      var origen1 = {p:0};
+      var destino1 = {p:Math.PI/4};
+      var that = this;
+      //Primera parte de la animacion
+      var movimiento1 = new TWEEN.Tween(origen1)
+      .to(destino1, 200)
+      .yoyo(true)
+      .repeat(1)
+      .easing(TWEEN.Easing.Linear.None)
+      .onUpdate(function(value){
+          //Brazo d
+          that.brazoD_.rotation.x = origen1.p;
+          that.brazoI_.rotation.x = -origen1.p
+
+          that.piernaD_.rotation.x = -origen1.p;
+          that.piernaI_.rotation.x = origen1.p
+      })
+      .onComplete(function(value){
+        movimiento2.start();
+      });
       
+
+      var origen2 = {p:0};
+      var destino2 = {p:-Math.PI/4};
+
+      var movimiento2 = new TWEEN.Tween(origen2)
+      .to(destino2, 200)
+      .easing(TWEEN.Easing.Linear.None)
+      .onUpdate(function(value){
+        //Brazo d
+        that.brazoD_.rotation.x = origen2.p;
+        that.brazoI_.rotation.x = -origen2.p
+
+        that.piernaD_.rotation.x = -origen2.p;
+        that.piernaI_.rotation.x = origen2.p;
+      })
+      .yoyo(true)
+      .repeat(1)
+      .onComplete(function(){
+        that.animando = false;
+      });
+
+      movimiento1.start();
+
+
+
     }
     
       
     update() {
-      
       //Metodo que actualiza
       if (this.forward) {
-        console.log("HACIA DELANTE");
-        var fuerza = 100;
-        var direccion = new THREE.Vector3(1,0,0);
-
-        var effect = direccion.normalize().multiplyScalar(fuerza);
-        this.box_container.applyCentralImpulse(effect);
-        
-      } else if (!this.forward && !this.backward) {
-        
-                   
-      }else if (this.backward) {
-        // Se quiere ir hacia atrás. Se habilita un motor angular para las ruedas motrices
-        // Y en el eje 2 (el eje Z), con un límite inferior más alto que el superior
-        // Solo cambia el signo de la velocidad
-                   
+        var pos = this.box_container.position;
+        pos['z'] -= 0.1;
+        this.box_container.__dirtyPosition = true;  
+        if(this.meshProta.rotation['y'] < 0){
+          this.meshProta.rotation['y'] += 0.1
+        }
+        if(this.meshProta.rotation['y'] > 0){
+          this.meshProta.rotation['y'] -= 0.1
+        }
       }
 
-
-      if (!(this.forward || this.backward)) {
-        // Si no se está acelerando, ya sea hacia adelante o hacia atrás
-        // Se apagan los motores de las 2 ruedas
-        
-        
+      if (this.backward) {
+        var pos = this.box_container.position;
+        pos['z'] += 0.1;
+        this.box_container.__dirtyPosition = true; 
+        if(this.meshProta.rotation['y'] < 0){
+          this.meshProta.rotation['y'] += 0.1
+        }
+        if(this.meshProta.rotation['y'] > 0){
+          this.meshProta.rotation['y'] -= 0.1
+        }           
       }
       
-      if ((this.right && this.left) || !(this.right || this.left)) {
-        // Si se pulsan a la vez los cursores derecha e izquierda
-        // O no se pulsa ninguno de los 2
-        // Las ruedas directrices las dejamos rectas
+      if (this.right) {
+        var pos = this.box_container.position;
+        pos['x'] += 0.1;
+        this.box_container.__dirtyPosition = true; 
+        if(this.meshProta.rotation['y'] > -Math.PI/2){
+          this.meshProta.rotation['y'] -= 0.1
+        }
         
-      } else if (this.right) {
-        // Si no, se cambian los límites angulares en el Eje Y 
-        // para que las ruedas estén giradas medio radián hacia uno u otro lado
-        // segun corresponda
-        
-      } else if (this.left) {
-         
+      } 
+      else if (this.left) {
+        var pos = this.box_container.position;
+        pos['x'] -= 0.1;
+        this.box_container.__dirtyPosition = true; 
+        if(this.meshProta.rotation['y'] < Math.PI/2){
+          this.meshProta.rotation['y'] += 0.1
+        }
+      }
+      this.box_container.rotation['x'] = 0;
+      this.box_container.rotation['z'] = 0;
+      this.box_container.rotation['y'] = 0;   
+      this.box_container.__dirtyRotation = true;
+
+      //Eliminar inercia
+
+      var velocidadNula = new THREE.Vector3(0,0,0);
+      this.box_container.setLinearVelocity(velocidadNula);
+
+      if((this.backward || this.forward || this.left || this.right) && this.animando==false){
+        this.animando = true;
+        this.animar();
       }
         
     }

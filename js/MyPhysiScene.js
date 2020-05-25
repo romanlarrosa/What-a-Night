@@ -16,6 +16,10 @@ class MyPhysiScene extends Physijs.Scene {
     
     // Se establece el valor de la gravedad, negativo, los objetos caen hacia abajo
     this.setGravity (new THREE.Vector3 (0, -10, 0));
+
+        // The Formula 1
+    // Tamaño, posicion x inicial, posicion y inicial
+    this.prota = new Prota(this); 
     
     // Para almacenar las figuras que caen
     this.boxes = [];
@@ -44,9 +48,7 @@ class MyPhysiScene extends Physijs.Scene {
     // Unas cajas que van a caer
     this.createBoxes (MyPhysiScene.MAXBOXES);
     
-    // The Formula 1
-    // Tamaño, posicion x inicial, posicion y inicial
-    this.prota = new Prota(this); 
+
   }
   
   createRenderer (myCanvas) {
@@ -167,12 +169,14 @@ class MyPhysiScene extends Physijs.Scene {
     //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set (20, 10, 20);
+    this.camera.position.set (20, 70, 50);
     // Y hacia dónde mira
-    var look = new THREE.Vector3 (0,0,0);
-    this.camera.lookAt(look);
+    this.look = new THREE.Vector3 (0,0,0);
+    this.camera.lookAt(this.look);
     this.add (this.camera);
-    
+
+    this.prota.box_container.add(this.camera);
+
     // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
     this.cameraControl = new THREE.TrackballControls (this.camera, this.renderer.domElement);
     // Se configuran las velocidades de los movimientos
@@ -180,7 +184,15 @@ class MyPhysiScene extends Physijs.Scene {
     this.cameraControl.zoomSpeed = -2;
     this.cameraControl.panSpeed = 0.5;
     // Debe orbitar con respecto al punto de mira de la cámara
-    this.cameraControl.target = look;
+    this.cameraControl.target = this.look;
+    
+  }
+
+  updateCamera(){
+    //this.nuevoTarget = this.prota.position.clone();
+    //this.prota.getWorldPosition(this.nuevoTarget);
+    //this.camera.lookAt(this.nuevoTarget);
+
   }
   
   createGround () {
@@ -194,7 +206,7 @@ class MyPhysiScene extends Physijs.Scene {
     var ground = new Physijs.BoxMesh (geometry, physiMaterial, 0);
 
     // Un par de paredes al suelo
-    geometry = new THREE.BoxGeometry (50, 1, 0.2);
+    geometry = new THREE.BoxGeometry (50, 30, 5);
     geometry.applyMatrix (new THREE.Matrix4().makeTranslation(0,0.5,0));
     var physiPared = new Physijs.BoxMesh (geometry,physiMaterial,0);
     physiPared.position.z = 25;
@@ -288,9 +300,9 @@ class MyPhysiScene extends Physijs.Scene {
     // Se actualizan los elementos de la escena para cada frame
     // Se actualiza la intensidad de la luz con lo que haya indicado el usuario en la gui
     this.spotLight.intensity = this.guiControls.lightIntensity;
-    
-    // Se actualiza la posición de la cámara según su controlador
+
     this.cameraControl.update();
+    
     
     if (this.guiControls.brake) {
       var velocity = null;
@@ -301,12 +313,16 @@ class MyPhysiScene extends Physijs.Scene {
     }
 
     this.prota.update();
+    this.updateCamera();
     
     // Se le pide al motor de física que actualice las figuras según sus leyes
     this.simulate ();
 
+    
+
     // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
     this.renderer.render(this, this.getCamera());
+    TWEEN.update();
   }
 }
 
