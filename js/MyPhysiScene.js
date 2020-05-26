@@ -43,10 +43,13 @@ class MyPhysiScene extends Physijs.Scene {
     // IMPORTANTE: Los elementos que se desee sean tenidos en cuenta en la FISICA deben colgar DIRECTAMENTE de la escena. NO deben colgar de otros nodos.
     
     // Un suelo 
-    this.createGround ();
+    this.mapa = new Mapa(this);
+
+    //Generadores
+    this.generador1 = new Generador(this, 80, 80, this.prota, 1);
     
     // Unas cajas que van a caer
-    this.createBoxes (MyPhysiScene.MAXBOXES);
+    //this.createBoxes (MyPhysiScene.MAXBOXES);
     
 
   }
@@ -126,19 +129,19 @@ class MyPhysiScene extends Physijs.Scene {
   onKeyDown (event) {
     var key = event.which || event.keyCode;
     switch (key) {
-      case 65 : // La tecla de la  A
+      case 72 : // La tecla de la  A
         window.alert("El coche avanza/retrocede con los cursores arriba/abajo\nGira a izquierda/derecha con los cursores izquierda/derecha\nPueden pulsarse varias teclas a la vez.");
         break;
-      case 37 : // Cursor a la izquierda
+      case 65 : // Cursor a la izquierda
         this.prota.left = true;
         break;
-      case 38 : // Cursor arriba
+      case 87 : // Cursor arriba
         this.prota.forward = true;
         break;
-      case 39 : // Cursor a la derecha
+      case 68 : // Cursor a la derecha
         this.prota.right = true;
         break;
-      case 40 : // Cursor abajo
+      case 83 : // Cursor abajo
         this.prota.backward = true;
         break;
     }
@@ -147,16 +150,16 @@ class MyPhysiScene extends Physijs.Scene {
   onKeyUp (event) {
     var key = event.which || event.keyCode;
     switch (key) {
-      case 37 : // Cursor a la izquierda
+      case 65 : // Cursor a la izquierda
         this.prota.left = false;
         break;
-      case 38 : // Cursor arriba
+      case 87 : // Cursor arriba
         this.prota.forward = false;
         break;
-      case 39 : // Cursor a la derecha
+      case 68 : // Cursor a la derecha
         this.prota.right = false;
         break;
-      case 40 : // Cursor abajo
+      case 83 : // Cursor abajo
         this.prota.backward = false;
         break;
     }
@@ -275,9 +278,11 @@ class MyPhysiScene extends Physijs.Scene {
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
 //     this.spotLight = new THREE.SpotLight( 0xffffff, this.guiControls.lightIntensity );
-    this.spotLight = new THREE.SpotLight( 0xffffff, 0.5 );
-    this.spotLight.position.set( 60, 60, 40 );
-    this.add (this.spotLight);
+    this.spotLight = new THREE.SpotLight( 0xffffff, 1 );
+    this.spotLight.position.set( 20, 20, 20 );
+    this.spotLight.target.position.set(0, 0, 0);
+    this.prota.box_container.add (this.spotLight);
+    this.prota.box_container.add (this.spotLight.target);
   }
   
   getCamera () {
@@ -314,6 +319,9 @@ class MyPhysiScene extends Physijs.Scene {
 
     this.prota.update();
     this.updateCamera();
+
+    //Generadores
+    this.generador1.update();
     
     // Se le pide al motor de física que actualice las figuras según sus leyes
     this.simulate ();

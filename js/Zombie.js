@@ -1,13 +1,16 @@
-class Prota {
+class Zombie {
     // Parámetros:
     // scene, la escena
     // sc, la escala del coche
     // x, z,  la posición donde se crea
-    constructor(scene) {
+    constructor(scene, generador, index, prota) {
       //Creamos al personaje
-      this.vida = 100;
-      this.vel_powerup = 2;
-      this.createProta();
+      this.scene = scene;
+      this.generador = generador;
+      this.index = index;
+      this.prota = prota;
+
+      this.createZombie();
       var containerGeometry = new THREE.BoxGeometry( 3, 7.8, 3 );
 
       this.box_container = new Physijs.BoxMesh(
@@ -18,20 +21,16 @@ class Prota {
       );
 
       this.box_container.add(this.meshProta);
-      this.box_container.position.set(0,4.5,0);
+      this.box_container.position.set(generador.x, 4.5 , generador.z);
       this.box_container.__dirtyPosition = true;
       // Assuming your model has already been imported
       
       scene.add(this.box_container);
-      this.forward = false;
-      this.backward = false;
-      this.right = false;
-      this.left = false;
 
       this.animando=false;
     }
 
-    createProta() {
+    createZombie() {
       var material = new THREE.MeshNormalMaterial();
       this.meshProta = new THREE.Object3D();
       var cabeza = new THREE.BoxGeometry(1,1,1);
@@ -44,10 +43,12 @@ class Prota {
       piernaD.translate(0,-1.5,0);
       var brazoI = new THREE.BoxGeometry(0.4,3,0.4);
       brazoI.translate(0, -1.5, 0);
-      brazoI.rotateZ(-0.2);
+      //brazoI.rotateZ(-0.2);
+      brazoI.rotateX(Math.PI/2);
       var brazoD = new THREE.BoxGeometry(0.4,3,0.4);
       brazoD.translate(0, -1.5, 0);
-      brazoD.rotateZ(0.2);
+      //brazoD.rotateZ(0.2);
+      brazoD.rotateX(Math.PI/2);
 
       this.brazoD_ = new THREE.Mesh(brazoD, material);
       this.brazoI_ = new THREE.Mesh(brazoI, material);
@@ -93,17 +94,17 @@ class Prota {
       var that = this;
       //Primera parte de la animacion
       var movimiento1 = new TWEEN.Tween(origen1)
-      .to(destino1, 200)
+      .to(destino1, 500)
       .yoyo(true)
       .repeat(1)
       .easing(TWEEN.Easing.Linear.None)
       .onUpdate(function(value){
           //Brazo d
-          that.brazoD_.rotation.x = origen1.p;
-          that.brazoI_.rotation.x = -origen1.p
+          that.brazoD_.rotation.x = origen1.p/3;
+          that.brazoI_.rotation.x = -origen1.p/3;
 
           that.piernaD_.rotation.x = -origen1.p;
-          that.piernaI_.rotation.x = origen1.p
+          that.piernaI_.rotation.x = origen1.p;
       })
       .onComplete(function(value){
         movimiento2.start();
@@ -114,12 +115,12 @@ class Prota {
       var destino2 = {p:-Math.PI/4};
 
       var movimiento2 = new TWEEN.Tween(origen2)
-      .to(destino2, 200)
+      .to(destino2, 500)
       .easing(TWEEN.Easing.Linear.None)
       .onUpdate(function(value){
         //Brazo d
-        that.brazoD_.rotation.x = origen2.p;
-        that.brazoI_.rotation.x = -origen2.p
+        that.brazoD_.rotation.x = origen2.p/3;
+        that.brazoI_.rotation.x = -origen2.p/3;
 
         that.piernaD_.rotation.x = -origen2.p;
         that.piernaI_.rotation.x = origen2.p;
@@ -138,59 +139,56 @@ class Prota {
     
       
     update() {
-      //Metodo que actualiza
-      if (this.forward) {
+
+      //Calcular el angulo
+      this.meshProta.rotation['y'] = 0;   
+      var vector1 = new THREE.Vector3(0, 0, -1); 
+      var protaPos = this.prota.box_container.position;
+      var zombiePos = this.box_container.position;
+
+      var vector2 = new THREE.Vector3(protaPos['x'] - zombiePos['x'], protaPos['y'] - zombiePos['y'], protaPos['z'] - zombiePos['z']);
+
+      var parteAbajo = (Math.sqrt(vector1['x']*vector1['x'] + vector1['z']*vector1['z']) * Math.sqrt(vector2['x']*vector2['x'] + vector2['z']*vector2['z']) );
+      var cos_angulo = (vector1['x']*vector2['x'] + vector1['z']*vector2['z'])/parteAbajo;
+
+      var angulo = Math.acos(cos_angulo);
+
+      this.meshProta.rotation['y'] = angulo;
+      
+
+
+
+      //Programar el movimiento
+      if(this.prota.box_container.position.x > this.box_container.position.x){
         var pos = this.box_container.position;
-        pos['z'] -= 0.1 * this.vel_powerup;
-        this.box_container.__dirtyPosition = true;  
-        if(this.meshProta.rotation['y'] < 0){
-          this.meshProta.rotation['y'] += 0.1
-        }
-        if(this.meshProta.rotation['y'] > 0){
-          this.meshProta.rotation['y'] -= 0.1
-        }
+        pos['x'] += 0.05 ;
+        this.box_container.__dirtyPosition = true;
+      }
+      else if(this.prota.box_container.position.x < this.box_container.position.x){
+        var pos = this.box_container.position;
+        pos['x'] -= 0.05 ;
+        this.box_container.__dirtyPosition = true;
       }
 
-      if (this.backward) {
+      if(this.prota.box_container.position.z > this.box_container.position.z){
         var pos = this.box_container.position;
-        pos['z'] += 0.1 * this.vel_powerup;
-        this.box_container.__dirtyPosition = true; 
-        if(this.meshProta.rotation['y'] < 0){
-          this.meshProta.rotation['y'] += 0.1
-        }
-        if(this.meshProta.rotation['y'] > 0){
-          this.meshProta.rotation['y'] -= 0.1
-        }           
+        pos['z'] += 0.05 ;
+        this.box_container.__dirtyPosition = true;
       }
-      
-      if (this.right) {
+      else if(this.prota.box_container.position.z < this.box_container.position.z){
         var pos = this.box_container.position;
-        pos['x'] += 0.1 * this.vel_powerup; 
-        this.box_container.__dirtyPosition = true; 
-        if(this.meshProta.rotation['y'] > -Math.PI/2){
-          this.meshProta.rotation['y'] -= 0.1
-        }
-        
-      } 
-      else if (this.left) {
-        var pos = this.box_container.position;
-        pos['x'] -= 0.1 * this.vel_powerup;
-        this.box_container.__dirtyPosition = true; 
-        if(this.meshProta.rotation['y'] < Math.PI/2){
-          this.meshProta.rotation['y'] += 0.1
-        }
+        pos['z'] -= 0.05 ;
+        this.box_container.__dirtyPosition = true;
       }
+
+
       this.box_container.rotation['x'] = 0;
       this.box_container.rotation['z'] = 0;
       this.box_container.rotation['y'] = 0;   
       this.box_container.__dirtyRotation = true;
+      
 
-      //Eliminar inercia
-
-      var velocidadNula = new THREE.Vector3(0,0,0);
-      this.box_container.setLinearVelocity(velocidadNula);
-
-      if((this.backward || this.forward || this.left || this.right) && this.animando==false){
+      if(this.animando==false){
         this.animando = true;
         this.animar();
       }
