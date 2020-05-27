@@ -152,6 +152,9 @@ class Zombie {
       var cos_angulo = (vector1['x']*vector2['x'] + vector1['z']*vector2['z'])/parteAbajo;
 
       var angulo = Math.acos(cos_angulo);
+      if(protaPos['x']>zombiePos['x']){
+        angulo = -angulo;
+      }
 
       this.meshProta.rotation['y'] = angulo;
       
