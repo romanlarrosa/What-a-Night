@@ -48,7 +48,7 @@ class Generador {
         var segundosTranscurridos = (tiempoActual - this.tiempoAnterior)/1000;
         
         if(segundosTranscurridos > 5/this.nivel){
-            console.log("Creo un zombie");
+            //console.log("Creo un zombie");
             this.generarZombie();
             this.tiempoAnterior = tiempoActual;
         }
@@ -56,6 +56,7 @@ class Generador {
 
         //Actualizar todos los zombies
         for(let i=0; i<this.zombies.length; i++){
+            if (this.zombies[i] != null)
             this.zombies[i].update();
         }
 

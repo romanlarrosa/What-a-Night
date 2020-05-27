@@ -7,7 +7,7 @@ class Mapa {
         var materialDark = new THREE.MeshPhongMaterial ({map: texture, color: 0xbfbfbf});
         var physiMaterial = Physijs.createMaterial (material, 1, 0.1);
         var physiMaterialDark = Physijs.createMaterial (materialDark, 0.2, 0.5);
-        var ground = new Physijs.BoxMesh (geometry, physiMaterial, 0);
+        this.ground = new Physijs.BoxMesh (geometry, physiMaterial, 0);
 
         var material_transparent = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5 })
         var physiMaterial_transparent = Physijs.createMaterial (material_transparent, 1, 0.1);
@@ -17,11 +17,11 @@ class Mapa {
         geometry.applyMatrix (new THREE.Matrix4().makeTranslation(0,15,0));
         var physiPared = new Physijs.BoxMesh (geometry,physiMaterial_transparent,0);
         physiPared.position.z = 100;
-        ground.add(physiPared);
+        this.ground.add(physiPared);
 
         physiPared = new Physijs.BoxMesh (geometry,physiMaterial_transparent,0);
         physiPared.position.z = -100;
-        ground.add (physiPared);
+        this.ground.add (physiPared);
 
 
         var geometry1 = new THREE.BoxGeometry (205, 30, 5);
@@ -29,20 +29,24 @@ class Mapa {
         geometry1.applyMatrix (new THREE.Matrix4().makeRotationY(Math.PI/2));
         physiPared = new Physijs.BoxMesh (geometry1,physiMaterial_transparent,0);
         physiPared.position.x = 100;
-        ground.add(physiPared);
+        this.ground.add(physiPared);
 
         physiPared = new Physijs.BoxMesh (geometry1,physiMaterial_transparent,0);
         physiPared.position.x = -100;
-        ground.add (physiPared);
+        this.ground.add (physiPared);
         
         //crear los muros
-        this.createMuros(ground, physiMaterialDark);
+        this.createMuros(this.ground, physiMaterialDark);
         
         
-        scene.add (ground);
+        scene.add (this.ground);
         
      
      
+    }
+
+    tostring(){
+        return "SOY el mapa";
     }
 
     createMuros(ground, material) {

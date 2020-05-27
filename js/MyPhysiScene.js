@@ -46,7 +46,9 @@ class MyPhysiScene extends Physijs.Scene {
     this.mapa = new Mapa(this);
 
     //Generadores
-    this.generador1 = new Generador(this, 80, 80, this.prota, 1);
+    this.generadores = new Array();
+    this.generador1 = new Generador(this, -80, -80, this.prota, 1);
+    this.generadores.push(this.generador1);
     
     // Unas cajas que van a caer
     //this.createBoxes (MyPhysiScene.MAXBOXES);
@@ -179,16 +181,47 @@ class MyPhysiScene extends Physijs.Scene {
     this.add (this.camera);
 
     this.prota.box_container.add(this.camera);
-
-    // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
-    this.cameraControl = new THREE.TrackballControls (this.camera, this.renderer.domElement);
-    // Se configuran las velocidades de los movimientos
-    this.cameraControl.rotateSpeed = 5;
-    this.cameraControl.zoomSpeed = -2;
-    this.cameraControl.panSpeed = 0.5;
-    // Debe orbitar con respecto al punto de mira de la cámara
-    this.cameraControl.target = this.look;
     
+  }
+
+  disparar (event) {
+    //Traducir a las coordenadas que entiende el raytracer
+    var mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
+    
+
+    //Metemos a todos los zombies en un array
+    var pickableObjects = new Array();
+    pickableObjects.push(this.mapa.ground);
+    for(var i = 0; i < this.generadores.length; i++){
+      for(var j = 0; j < this.generadores[i].zombies.length; j++){
+        if(this.generadores[i].zombies[j] != null)
+        pickableObjects.push(this.generadores[i].zombies[j].box_container);
+      }
+    }
+
+    //console.log(pickableObjects.length);
+
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, this.camera);
+    var pickedObjects = raycaster.intersectObjects(pickableObjects, true); 
+
+    if(pickedObjects.length > 0){
+      var selectedObject = pickedObjects[0].object;
+      var selectedPoint = pickedObjects[0].point;
+
+      //console.log(selectedObject.generador);
+
+      /*
+      selectedObject.eliminado = true;
+      this.remove(selectedObject.generador.zombies[selectedObject.index].box_container);
+      selectedObject.generador.zombies[selectedObject.index] = null;
+      */
+      this.prota.disparar(selectedPoint);
+    }
+
+
   }
 
   updateCamera(){
@@ -301,12 +334,13 @@ class MyPhysiScene extends Physijs.Scene {
     // La propia función render es la que indica que quiere ejecutarse la proxima vez
     // Por tanto, esta instrucción es la que hace posible que la función  render  se ejecute continuamente y por tanto podamos crear imágenes que tengan en cuenta los cambios que se la hayan hecho a la escena después de un render.
     requestAnimationFrame(() => this.update());
+
     
     // Se actualizan los elementos de la escena para cada frame
     // Se actualiza la intensidad de la luz con lo que haya indicado el usuario en la gui
     this.spotLight.intensity = this.guiControls.lightIntensity;
 
-    this.cameraControl.update();
+    //this.cameraControl.update();
     
     
     if (this.guiControls.brake) {
@@ -326,6 +360,12 @@ class MyPhysiScene extends Physijs.Scene {
     // Se le pide al motor de física que actualice las figuras según sus leyes
     this.simulate ();
 
+    //Ir subiendo el nivel de dificultad
+    for(var i = 0; i<this.generadores.length; i++){
+      if (this.generadores[i].nivel < 10)
+        this.generadores[i].nivel += 0.002;
+    }
+
     
 
     // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
@@ -333,6 +373,8 @@ class MyPhysiScene extends Physijs.Scene {
     TWEEN.update();
   }
 }
+
+
 
 MyPhysiScene.MAXBOXES=20;
 MyPhysiScene.PROBBOX=0.5;
@@ -351,6 +393,7 @@ $(function () {
   // Se añaden listeners para el teclado para el control del coche
   window.addEventListener ("keydown", () => scene.onKeyDown(event));
   window.addEventListener ("keyup",   () => scene.onKeyUp(event));
+  window.addEventListener ("mousedown", () => scene.disparar(event));
   
   // Finalmente, realizamos el primer renderizado.
   scene.update();

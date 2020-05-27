@@ -24,6 +24,11 @@ class Zombie {
       this.box_container.position.set(generador.x, 4.5 , generador.z);
       this.box_container.__dirtyPosition = true;
       // Assuming your model has already been imported
+
+      this.box_container.generador = generador;
+      this.box_container.index = index;
+      this.box_container.eliminado = false;
+
       
       scene.add(this.box_container);
 
@@ -136,6 +141,7 @@ class Zombie {
 
 
     }
+
     
       
     update() {

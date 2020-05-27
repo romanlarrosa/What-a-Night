@@ -5,6 +5,7 @@ class Prota {
     // x, z,  la posición donde se crea
     constructor(scene) {
       //Creamos al personaje
+      this.scene = scene;
       this.vida = 100;
       this.vel_powerup = 2;
       this.createProta();
@@ -29,6 +30,17 @@ class Prota {
       this.left = false;
 
       this.animando=false;
+      this.box_container.prota = true;
+    }
+
+    disparar (punto) {
+
+      //Generar una bala y lanzarla hacia el punto
+      //Direccion de la bala:
+      var direccion = new THREE.Vector3(punto['x'] - this.box_container.position['x'], 0, punto['z'] - this.box_container.position['z']);
+      var bala = new Bala(this.scene, direccion, this);
+      //bala.disparar();
+
     }
 
     createProta() {
