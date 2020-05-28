@@ -44,6 +44,9 @@ class Generador {
 
     update() {
 
+        if (this.nivel < 10)
+            this.nivel += 0.0005;
+
         var tiempoActual = Date.now();
         var segundosTranscurridos = (tiempoActual - this.tiempoAnterior)/1000;
         

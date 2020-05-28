@@ -31,6 +31,20 @@ class Prota {
 
       this.animando=false;
       this.box_container.prota = true;
+
+      //Colisiones
+      /*
+      var that = this;
+      this.box_container.addEventListener('collision', function(objeto, v, r, n) {
+            if (objeto.index > -1){
+                //Se le quita vida al protagonista
+                console.log("TOCADO");
+                that.vida -= 20;
+            }
+            
+            
+        })
+        */
     }
 
     disparar (punto) {
@@ -205,6 +219,10 @@ class Prota {
       if((this.backward || this.forward || this.left || this.right) && this.animando==false){
         this.animando = true;
         this.animar();
+      }
+
+      if(this.vida <= 0){
+        console.log("MATAO");
       }
         
     }

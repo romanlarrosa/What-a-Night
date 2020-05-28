@@ -30,7 +30,9 @@ class MyPhysiScene extends Physijs.Scene {
     this.raycaster = new THREE.Raycaster();
     
     // Se crea la gui
-    this.gui = this.createGUI ();
+    //this.gui = this.createGUI ();
+    this.puntuacion = 0;
+    this.nivel = 0;
     
     // Construimos los distinos elementos que tendremos en la escena
     
@@ -269,31 +271,12 @@ class MyPhysiScene extends Physijs.Scene {
     // En este caso la intensidad de la luz y si se muestran o no los ejes
     this.guiControls = new function() {
       // En el contexto de una función   this   alude a la función
-      this.lightIntensity = 0.5;
-      this.brake = true;
-      this.boxesUp = function () {
-        that.todos.forEach (function (element) {
-          element.position.set (Math.random()*10-5, Math.random()*4+10, Math.random()*10-5);
-          element.rotation.set (Math.random()*Math.PI*2,Math.random()*Math.PI*2,Math.random()*Math.PI*2); 
-          element.setLinearVelocity (new THREE.Vector3());
-          element.__dirtyPosition = true;
-          element.__dirtyRotation = true;
-          element.material.wireframe = false;
-        });
-      }
+      this.puntuacion = 0;
+      this.nivel = 0;
+      
     }
+    
 
-    // Accedemos a la variable global   gui   declarada en   script.js   para añadirle la parte de interfaz que corresponde a los elementos de esta clase
-    
-    gui.add (this.guiControls, 'boxesUp').name ('[Cajas Arriba]');
-    gui.add (this.guiControls, 'brake').name ('Frenar esferas');
-    
-    // Se crea una sección para los controles de esta clase
-    var folder = gui.addFolder ('Luz y Ejes');
-    
-    // Se le añade un control para la intensidad de la luz
-    folder.add (this.guiControls, 'lightIntensity', 0, 1, 0.1).name('Intensidad de la Luz : ');
-    
     return gui;
   }
   
@@ -338,32 +321,25 @@ class MyPhysiScene extends Physijs.Scene {
     
     // Se actualizan los elementos de la escena para cada frame
     // Se actualiza la intensidad de la luz con lo que haya indicado el usuario en la gui
-    this.spotLight.intensity = this.guiControls.lightIntensity;
-
-    //this.cameraControl.update();
-    
-    
-    if (this.guiControls.brake) {
-      var velocity = null;
-      this.spheres.forEach (function (e) {
-        velocity = e.getAngularVelocity();
-        e.setAngularVelocity (velocity.multiplyScalar(MyPhysiScene.BRAKE));
-      });
-    }
+    //this.spotLight.intensity = this.guiControls.lightIntensity;
 
     this.prota.update();
     this.updateCamera();
 
-    //Generadores
-    this.generador1.update();
     
-    // Se le pide al motor de física que actualice las figuras según sus leyes
-    this.simulate ();
+    
+    
 
-    //Ir subiendo el nivel de dificultad
+    //Actualizar puntuación y nivel
+    var t_puntuacion = document.getElementById('puntuacion');
+    var t_nivel = document.getElementById('nivel');
+
+    t_puntuacion.innerHTML = this.puntuacion;
+
+    //Actualizar los generadores
     for(var i = 0; i<this.generadores.length; i++){
-      if (this.generadores[i].nivel < 10)
-        this.generadores[i].nivel += 0.002;
+      this.generadores[i].update();
+      t_nivel.innerHTML = Math.trunc(this.generadores[i].nivel);
     }
 
     
@@ -371,6 +347,9 @@ class MyPhysiScene extends Physijs.Scene {
     // Por último, se le pide al renderer que renderice la escena que capta una determinada cámara, que nos la proporciona la propia escena.
     this.renderer.render(this, this.getCamera());
     TWEEN.update();
+
+    // Se le pide al motor de física que actualice las figuras según sus leyes
+    this.simulate ();
   }
 }
 

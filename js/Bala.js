@@ -30,6 +30,9 @@ class Bala {
                 objeto.eliminado = true;
                 that.scene.remove(objeto.generador.zombies[objeto.index].box_container);
                 objeto.generador.zombies[objeto.index] = null;
+
+                //Subir la puntuación
+                that.scene.puntuacion++;
             }
             if (!objeto.prota){
                 //console.log("Has acertado:" + objeto.index);
