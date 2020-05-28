@@ -3,46 +3,53 @@
 <html>
 
 <head>
-    <title>Ejemplo de Física: Moster Truck</title>
+    <title>What a night</title>
     <meta charset="utf-8">
-<!--     <script type="text/javascript" src="../libs/three.min.js"></script> -->
-<!-- Se usa la version de three que viene con physijs -->
+    <!--     <script type="text/javascript" src="../libs/three.min.js"></script> -->
+    <!-- Se usa la version de three que viene con physijs -->
     <script type="text/javascript" src="./physijs/three.min.js"></script>
     <script type="text/javascript" src="./physijs/physi.js"></script>
-<!-- Todo lo demás igual -->    
+    <!-- Todo lo demás igual -->
     <script type="text/javascript" src="../libs/jquery.js"></script>
     <script type="text/javascript" src="../libs/Tween.js"></script>
     <script type="text/javascript" src="../libs/dat.gui.js"></script>
     <script type="text/javascript" src="../libs/TrackballControls.js"></script>
-    <script type="text/javascript" src="Bala.js"></script> 
-    <script type="text/javascript" src="Prota.js"></script>    
+    <script type="text/javascript" src="Bala.js"></script>
+    <script type="text/javascript" src="Prota.js"></script>
     <script type="text/javascript" src="Zombie.js"></script>
-    <script type="text/javascript" src="Generador.js"></script>      
-    <script type="text/javascript" src="Mapa.js"></script>     
+    <script type="text/javascript" src="Generador.js"></script>
+    <script type="text/javascript" src="Mapa.js"></script>
     <script type="text/javascript" src="MyPhysiScene.js"></script>
-    
+
     <style>
-        body{
+        body {
             margin: 0;
-            overflow: hidden; 
+            overflow: hidden;
         }
     </style>
 </head>
-<body>
 
-<!-- Div which will hold the Output -->
-<div id="WebGL-output">
-</div>
+<body style="color: beige;">
 
-<div style="position:absolute; left:100px; top:10px" id="Messages">
-  <h2>Pulsa  H  para obtener ayuda</h2>
-</div>
+    <!-- Div which will hold the Output -->
+    <div id="WebGL-output">
+    </div>
 
-<div style="position:absolute; right:100px; top:10px" id="Messages">
-    <h3>Puntuación: </h3><h3 id="puntuacion">0</h3>
-    <h3>Nivel: </h3><h3 id="nivel"></h3>
+    <div style="position:absolute; left:100px; top:10px" id="Messages">
+        <h3>Ayuda: H</h3>
+        <h3>Vida: </h3>
+        <h3 id="vida"></h3>
+    </div>
 
-  </div>
+    <div style="position:absolute; right:100px; top:10px" id="Messages">
+        <h3>Puntuación: </h3>
+        <h3 id="puntuacion">0</h3>
+        <h3>Nivel: </h3>
+        <h3 id="nivel"></h3>
+
+
+    </div>
 
 </body>
+
 </html>
