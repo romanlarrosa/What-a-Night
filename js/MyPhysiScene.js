@@ -54,6 +54,9 @@ class MyPhysiScene extends Physijs.Scene {
     
     // Unas cajas que van a caer
     //this.createBoxes (MyPhysiScene.MAXBOXES);
+
+    this.t_puntuacion = document.getElementById('puntuacion');
+    this.t_nivel = document.getElementById('nivel');
     
 
   }
@@ -326,20 +329,12 @@ class MyPhysiScene extends Physijs.Scene {
     this.prota.update();
     this.updateCamera();
 
-    
-    
-    
-
-    //Actualizar puntuación y nivel
-    var t_puntuacion = document.getElementById('puntuacion');
-    var t_nivel = document.getElementById('nivel');
-
-    t_puntuacion.innerHTML = this.puntuacion;
+    this.t_puntuacion.innerHTML = this.puntuacion;
 
     //Actualizar los generadores
     for(var i = 0; i<this.generadores.length; i++){
       this.generadores[i].update();
-      t_nivel.innerHTML = Math.trunc(this.generadores[i].nivel);
+      this.t_nivel.innerHTML = Math.trunc(this.generadores[i].nivel);
     }
 
     
