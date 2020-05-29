@@ -140,8 +140,6 @@ class Zombie {
     movimiento1.start();
   }
 
-
-
   update() {
 
     //Calcular el angulo para mirar siempre hacia el protagonista
