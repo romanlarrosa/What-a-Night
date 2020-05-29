@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <!--     <script type="text/javascript" src="../libs/three.min.js"></script> -->
     <!-- Se usa la version de three que viene con physijs -->
+    <link rel="stylesheet" href="styles.css">
     <script type="text/javascript" src="./physijs/three.min.js"></script>
     <script type="text/javascript" src="./physijs/physi.js"></script>
     <!-- Todo lo demás igual -->
@@ -29,25 +30,28 @@
     </style>
 </head>
 
-<body style="color: beige;">
+<body>
+    <audio src="../audio/ayquemematan.mp3" type="audio/mpeg" autoplay>
+    </audio>
 
     <!-- Div which will hold the Output -->
     <div id="WebGL-output">
     </div>
 
-    <div style="position:absolute; left:100px; top:10px" id="Messages">
-        <h3>Ayuda: H</h3>
-        <h3>Vida: </h3>
-        <h3 id="vida"></h3>
+    <div style="position:absolute; left:30px; top:10px" id="izda">
+        <p>Vida: <a id="vida"></a></p>
+        <p>Puntuación: <a id="puntuacion">0</a></p>
+        <p>Nivel: <a id="nivel"></a></p>
     </div>
 
-    <div style="position:absolute; right:100px; top:10px" id="Messages">
-        <h3>Puntuación: </h3>
-        <h3 id="puntuacion">0</h3>
-        <h3>Nivel: </h3>
-        <h3 id="nivel"></h3>
-
-
+    <div style="position:absolute; right:30px; top:10px" id="dcha">
+        <button id="ayuda">Ayuda</button>
+        <script type="text/javascript">
+        var button = document.getElementById('ayuda');
+        button.onclick = function() {
+            alert("Movimiento controlado por WASD.\nApunta con el raton y dispara con el click izquierdo");
+        }
+        </script>
     </div>
 
 </body>

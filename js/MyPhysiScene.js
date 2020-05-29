@@ -108,6 +108,7 @@ class MyPhysiScene extends Physijs.Scene {
     }
   }
 
+
   createCamera() {
     // Para crear una cámara le indicamos
     //   El ángulo del campo de visión en grados sexagesimales

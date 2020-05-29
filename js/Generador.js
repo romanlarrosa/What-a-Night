@@ -50,7 +50,7 @@ class Generador {
     update() {
         //Incrementa el nivel
         if (this.nivel < 10) {
-            this.nivel += 0.0005;
+            this.nivel += 0.0004;
         }
 
         //Genera un zombie cada 5 segundos
