@@ -1,3 +1,3 @@
 # Juego-SG-P2
  
-[PLAY](./js/index.html)
+[PLAY](https://romanlarrosa.github.io/What-a-Nigh/)
